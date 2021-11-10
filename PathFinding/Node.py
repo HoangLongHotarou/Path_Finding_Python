@@ -2,7 +2,6 @@ from pydoc import Doc
 from PathFinding.Color import*
 import pygame
 
-
 class Node:
     def __init__(self, row, col, width, total_rows) -> None:
         self.row = row
@@ -15,15 +14,15 @@ class Node:
         self.neghbor = []
 
     def get_pos(self):
-        return self.row,self.col
+        return self.row, self.col
 
     def reset(self) -> None:
         self.color = WHITE
 
-    def is_reset(self)->bool:
+    def is_reset(self) -> bool:
         return self.color == WHITE
-    
-    def make_open(self)->None:
+
+    def make_open(self) -> None:
         self.color = GREEN
 
     def make_start(self) -> None:
@@ -38,7 +37,7 @@ class Node:
     def make_path(self) -> None:
         self.color = PURPLE
 
-    def make_closed(self)->None:
+    def make_closed(self) -> None:
         self.color = RED
 
     def is_start(self) -> bool:
@@ -51,11 +50,11 @@ class Node:
         return self.color == BLACK
 
     def is_closed(self) -> bool:
-        return self.color == GREEN
+        return self.color == RED
 
     def is_open(self) -> bool:
-        return self.color == RED
-    
+        return self.color == GREEN
+
     def is_path(self) -> bool:
         return self.color == PURPLE
 
@@ -65,17 +64,38 @@ class Node:
 
     def update_neighbor(self, grid) -> None:
         self.neighbors = []
-        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier():  # DOWN
+        # DOWN
+        if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier():
             self.neighbors.append(grid[self.row + 1][self.col])
 
-        if self.row > 0 and not grid[self.row - 1][self.col].is_barrier():  # UP
+        # UP
+        if self.row > 0 and not grid[self.row - 1][self.col].is_barrier():
             self.neighbors.append(grid[self.row - 1][self.col])
 
-        if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier():  # RIGHT
+        # RIGHT
+        if self.col < self.total_rows - 1 and not grid[self.row][self.col + 1].is_barrier():
             self.neighbors.append(grid[self.row][self.col + 1])
 
-        if self.col > 0 and not grid[self.row][self.col - 1].is_barrier():  # LEFT
+        # LEFT
+        if self.col > 0 and not grid[self.row][self.col - 1].is_barrier(): 
             self.neighbors.append(grid[self.row][self.col - 1])
 
-    def __lt__(self, other)->bool:
+        '''if use diagonal line :D'''
+        # # DOWN RIGHT
+        # if self.row < self.total_rows - 1 and self.col < self.total_rows - 1 and not grid[self.row + 1][self.col+1].is_barrier():
+        #     self.neighbors.append(grid[self.row + 1][self.col+1])
+
+        # # DOWN LEFT
+        # if self.row < self.total_rows - 1 and self.col > 0 and not grid[self.row + 1][self.col-1].is_barrier():
+        #     self.neighbors.append(grid[self.row + 1][self.col-1])
+        
+        # # UP RIGHT
+        # if self.row > 0 and self.col < self.total_rows - 1 and not grid[self.row - 1][self.col+1].is_barrier():
+        #     self.neighbors.append(grid[self.row - 1][self.col+1])
+
+        # # UP LEFT
+        # if self.row > 0 and self.col > 0 and not grid[self.row - 1][self.col-1].is_barrier():
+        #     self.neighbors.append(grid[self.row - 1][self.col-1])
+
+    def __lt__(self, other) -> bool:
         return False
