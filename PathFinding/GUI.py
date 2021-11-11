@@ -99,7 +99,7 @@ def draw(win, grid, rows, width):
 
 def get_clicked_node(node, rows, width):
     gap = width // rows
-    y, x = node
+    x, y = node
     row = y // gap
     col = x // gap
     return row, col
@@ -222,12 +222,12 @@ def convert_image():
     return image_str
 
 
-def create_maze_from_image(image, grid, rows, barrier):
+def create_maze_from_image(image, grid, rows):
     for i in range(rows):
         for j in range(rows):
             if image[i][j] == 0:
-                barrier = grid[j][i]
-                barrier.make_barrier()
+                # print(grid[i][j].row,grid[i][j].col)
+                grid[i][j].make_barrier()
 
 
 def GUI():
@@ -330,7 +330,7 @@ def GUI():
                         ROWS = len(img)
                         draw(win, grid, ROWS, width)
                         grid = make_grid(ROWS, width)
-                        create_maze_from_image(img, grid, ROWS, barrier)
+                        create_maze_from_image(img, grid, ROWS)
                     else:
                         generate_map(grid, ROWS)
 

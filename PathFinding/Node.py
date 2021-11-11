@@ -60,7 +60,7 @@ class Node:
 
     def draw(self, win) -> None:
         pygame.draw.rect(
-            win, self.color, (self.x, self.y, self.width, self.width))
+            win, self.color, (self.y, self.x, self.width, self.width))
 
     def update_neighbor(self, grid) -> None:
         self.neighbors = []
