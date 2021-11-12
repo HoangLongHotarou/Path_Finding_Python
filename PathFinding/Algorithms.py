@@ -46,7 +46,7 @@ def reconstruct_path(came_from, current, draw):
     return size
 
 
-def AStar(draw, grid, start, end) -> int:
+def AStar(draw, grid, start, end):
     c = 0
     count = 0
     open_set = PriorityQueue()
@@ -86,7 +86,7 @@ def AStar(draw, grid, start, end) -> int:
     return 0, count
 
 
-def Dijkstra(draw, grid, start, end) -> int:
+def Dijkstra(draw, grid, start, end):
     count = 0
     c = 0
     open_set = PriorityQueue()

@@ -259,6 +259,7 @@ def GUI():
             if pygame.mouse.get_pressed()[0]:  # LEFT
                 pos = pygame.mouse.get_pos()
                 row, col = get_clicked_node(pos, ROWS, width)
+                # print(f"({row},{col})")
                 if 0 <= row < ROWS and 0 <= col < ROWS:
                     node = grid[row][col]
                     if not start and node != end:
