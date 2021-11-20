@@ -104,8 +104,8 @@ def Dijkstra(draw, grid, start, end):
                 came_from[neighbor] = current
                 neighbor.g_score = temp_g_score
                 if neighbor not in open_set.queue:
-                    c += 1
-                    neighbor.count = c
+                    count += 1
+                    neighbor.count = count
                     open_set.put(neighbor)
                     neighbor.make_open()
         if current != start:
