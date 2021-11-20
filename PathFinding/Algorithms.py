@@ -3,6 +3,8 @@ from queue import PriorityQueue
 import pygame
 import math
 import PathFinding.GUI as GUI
+from collections import deque
+
 pygame.init()
 
 
@@ -30,19 +32,15 @@ def heuristic(p1, p2) -> int:
 def reconstruct_path(came_from, current, draw):
     size = 0
     clock = pygame.time.Clock()
-    from collections import deque
     path = deque()
     while current in came_from:
         current = came_from[current]
         path.appendleft(current)
-
     for i in path:
         pygame_processing()
         i.make_path()
-        size += 1
-        clock.tick(60)
+        clock.tick(150)
         draw()
-    return size
 
 
 def AStar(draw, grid, start, end):
@@ -84,6 +82,7 @@ def AStar(draw, grid, start, end):
 
 def Dijkstra(draw, grid, start, end):
     clock = pygame.time.Clock()
+    
     count = 0
     elapsed = 0
     open_set = PriorityQueue()

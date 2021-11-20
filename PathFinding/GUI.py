@@ -95,11 +95,11 @@ def draw(win, grid, rows, width):
     pygame.display.update()
 
 
-def get_clicked_node(node, rows, width):
+def get_clicked_node(pos, rows, width):
     gap = width // rows
-    x, y = node
-    row = y // gap
-    col = x // gap
+    y, x = pos
+    row = x // gap
+    col = y // gap
     return row, col
 
 
@@ -122,12 +122,11 @@ def remove_wall(a, b, grid):
 
 
 def generate_map_DFS(grid, rows):
-    stack = []
     for i in range(0, rows, 2):
         for j in range(rows):
             grid[i][j].make_barrier()
             grid[j][i].make_barrier()
-
+    stack = []
     current = grid[1][1]
     stack.append(current)
     while stack:
@@ -151,6 +150,7 @@ def restart(grid, rows):
         for j in range(rows):
             temp = grid[i][j]
             temp.reset_node()
+            temp.visited = False
             if temp.is_open() or temp.is_closed() or temp.is_path():
                 temp.reset()
 
@@ -292,13 +292,13 @@ def GUI():
                     if SELECT != 0:
                         t1 = time.time()
                         if came_from != 0:
-                            size = reconstruct_path(
+                            reconstruct_path(
                                 came_from, end, lambda: draw(win, grid, ROWS, width))
                             end.make_end()
                             start.make_start()
                         if len(step) >= 2:
                             step.pop(0)
-                        step.append([size, t1-t0, name, count])
+                        step.append([end.g_score, t1-t0, name, count])
                         SELECT = 0
 
                 if event.key == pygame.K_c:
