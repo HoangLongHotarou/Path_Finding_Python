@@ -14,7 +14,6 @@ def pygame_processing():
             if event.key == pygame.K_ESCAPE:
                 pygame.display.quit()
                 pygame.quit()
-                # quit()
                 GUI.GUI()
                 quit()
 
@@ -47,76 +46,70 @@ def reconstruct_path(came_from, current, draw):
 
 
 def AStar(draw, grid, start, end):
-    c = 0
-    count = 0
-    open_set = PriorityQueue()
-    open_set.put((0, c, start))
-    came_from = {}
-    g_score = {node: float('inf') for row in grid for node in row}
-    g_score[start] = 0
-    f_score = {node: float('inf') for row in grid for node in row}
-    f_score[start] = heuristic(start.get_pos(), end.get_pos())
-    visited = {node: False for row in grid for node in row}
-    open_set_hash = {start}
     clock = pygame.time.Clock()
+
+    count = 0
+    elapsed = 0
+    open_set = PriorityQueue()
+
+    start.g_score = 0
+    start.f_score = heuristic(start.get_pos(), end.get_pos())
+    came_from = {}
+
+    open_set.put(start)
     while not open_set.empty():
         pygame_processing()
-        count += 1
-        current = open_set.get()[2]
-        open_set_hash.remove(current)
+        elapsed += 1
+        current = open_set.get()
         if current == end:
-            return came_from, count
+            return came_from, elapsed
         for neighbor in current.neighbors:
-            temp_g_score = g_score[current]+1
-            if temp_g_score < g_score[neighbor] and visited[neighbor] == False:
+            temp_g_score = current.g_score+1
+            if temp_g_score < neighbor.g_score:
                 came_from[neighbor] = current
-                g_score[neighbor] = temp_g_score
-                f_score[neighbor] = temp_g_score + \
+                neighbor.g_score = temp_g_score
+                neighbor.f_score = temp_g_score + \
                     heuristic(neighbor.get_pos(), end.get_pos())
-                if neighbor not in open_set_hash:
-                    c += 1
-                    open_set.put((f_score[neighbor], c, neighbor))
-                    open_set_hash.add(neighbor)
+                if neighbor not in open_set.queue:
+                    count += 1
+                    neighbor.count = count
+                    open_set.put(neighbor)
                     neighbor.make_open()
-        visited[current] = True
         if current != start:
             current.make_closed()
         clock.tick(60)
         draw()
-    return 0, count
+    return 0, elapsed
 
 
 def Dijkstra(draw, grid, start, end):
-    count = 0
-    c = 0
-    open_set = PriorityQueue()
-    open_set.put((0, c, start))
-    came_from = {}
-    g_score = {node: float('inf') for row in grid for node in row}
-    g_score[start] = 0
-    visited = {node: False for row in grid for node in row}
-    open_set_hash = {start}
     clock = pygame.time.Clock()
+    count = 0
+    elapsed = 0
+    open_set = PriorityQueue()
+
+    start.g_score = 0
+    came_from = {}
+
+    open_set.put(start)
     while not open_set.empty():
         pygame_processing()
-        count += 1
-        current = open_set.get()[2]
-        open_set_hash.remove(current)
+        elapsed += 1
+        current = open_set.get()
         if current == end:
-            return came_from, count
+            return came_from, elapsed
         for neighbor in current.neighbors:
-            temp_g_score = g_score[current]+1
-            if temp_g_score < g_score[neighbor] and visited[neighbor] == False:
+            temp_g_score = current.g_score+1
+            if temp_g_score < neighbor.g_score:
                 came_from[neighbor] = current
-                g_score[neighbor] = temp_g_score
-                if neighbor not in open_set_hash:
+                neighbor.g_score = temp_g_score
+                if neighbor not in open_set.queue:
                     c += 1
-                    open_set.put((g_score[neighbor], c, neighbor))
-                    open_set_hash.add(neighbor)
+                    neighbor.count = c
+                    open_set.put(neighbor)
                     neighbor.make_open()
-        visited[current] = True
         if current != start:
             current.make_closed()
         clock.tick(60)
         draw()
-    return 0, count
+    return 0, elapsed

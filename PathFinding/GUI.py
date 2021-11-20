@@ -43,7 +43,6 @@ TEXT_END = FONT5.render("End", True, BLACK)
 TEXT_PATH = FONT5.render("Path", True, BLACK)
 
 
-
 def title(win, width):
     win.blit(TEXT_TITLE, (width+100, 60))
     win.blit(TEXT_INSTRUCTIONS, (width+50, 130))
@@ -55,7 +54,7 @@ def title(win, width):
     win.blit(TEXT_USEG_CAPLOCK, (width+50, 310))
     win.blit(TEXT_USED, (width+50, 340))
     win.blit(TEXT_INFOR, (width+140, width-50))
-    width+=20
+    width += 20
     pygame.draw.rect(win, BLACK, (width+50, 380, 20, 20))
     win.blit(TEXT_BARRIER, (width+75, 380))
     pygame.draw.rect(win, ORANGE, (width+130, 380, 20, 20))
@@ -64,7 +63,6 @@ def title(win, width):
     win.blit(TEXT_END, (width+235, 380))
     pygame.draw.rect(win, PURPLE, (width+290, 380, 20, 20))
     win.blit(TEXT_PATH, (width+315, 380))
-
 
 
 def make_grid(rows, width):
@@ -116,51 +114,43 @@ def generate_map(grid, rows):
         barrier.make_barrier()
 
 
-def recursiveDFS(pos, grid):
-    movesLeft = ['L', 'R', 'U', 'D']
-    i, j = pos
-    checked.append((i, j))
-    while movesLeft:
-        xTemp = i
-        yTemp = j
-        chooseRandMove = random.randint(0, len(movesLeft)-1)
-        currMove = movesLeft.pop(chooseRandMove)
-        if currMove == 'L':
-            xTemp -= 2
-        elif currMove == 'R':
-            xTemp += 2
-        elif currMove == 'U':
-            yTemp += 2
-        else:
-            yTemp -= 2
-        if 0 <= xTemp < len(grid) and 0 <= yTemp < len(grid):
-            if (xTemp, yTemp) not in checked and grid[xTemp][yTemp].is_barrier():
-                for b in range(min(j, yTemp), max(j, yTemp)+1):
-                    for a in range(min(i, xTemp), max(i, xTemp)+1):
-                        # if a==0 or b==0 or a==len(grid)-1 or b==len(grid)-1:continue
-                        grid[b][a].reset()
-                recursiveDFS((xTemp, yTemp), grid)
+def remove_wall(a, b, grid):
+    x = (a.row + b.row)//2
+    y = (a.col+b.col)//2
+    grid[x][y].reset()
+    return grid
 
 
 def generate_map_DFS(grid, rows):
-    global checked
-    checked = []
-    for i in range(rows):
+    stack = []
+    for i in range(0, rows, 2):
         for j in range(rows):
+            grid[i][j].make_barrier()
             grid[j][i].make_barrier()
-    x = random.randint(1, rows-1)
-    y = random.randint(1, rows-1)
-    if(x % 2 == 0 and y % 2 == 0 or x % 2 != 0 and y % 2 != 0):
-        x -= 1
-    pos = (x, y)
-    # print(pos)
-    recursiveDFS(pos, grid)
+
+    current = grid[1][1]
+    stack.append(current)
+    while stack:
+        neighbors = current.check_neighbors(grid)
+        if neighbors:
+            choosen_one = random.choice(neighbors)
+            choosen_one.make_visited()
+            grid = remove_wall(current, choosen_one, grid)
+            current.make_visited()
+            current = choosen_one
+            if choosen_one not in stack:
+                stack.append(choosen_one)
+        else:
+            current.make_visited()
+            current = stack[-1]
+            stack.remove(stack[-1])
 
 
 def restart(grid, rows):
     for i in range(rows):
         for j in range(rows):
             temp = grid[i][j]
+            temp.reset_node()
             if temp.is_open() or temp.is_closed() or temp.is_path():
                 temp.reset()
 
@@ -183,16 +173,16 @@ def tkinter_process():
     window = tkinter.Tk()
     window.title("Option")
     window.minsize(width=210, height=100)
-    window.resizable(False,False)
-    
+    window.resizable(False, False)
+
     def radio_used():
         global SELECT
         SELECT = radio_state.get()
     radio_state = tkinter.IntVar()
     radiobutton1 = tkinter.Radiobutton(
-        text="AStar",font=('segoeuisymbol',12), value=1, variable=radio_state, command=radio_used)
+        text="AStar", font=('segoeuisymbol', 12), value=1, variable=radio_state, command=radio_used)
     radiobutton2 = tkinter.Radiobutton(
-        text="Dijkstra",font=('segoeuisymbol',12), value=2, variable=radio_state, command=radio_used)
+        text="Dijkstra", font=('segoeuisymbol', 12), value=2, variable=radio_state, command=radio_used)
 
     radiobutton1.pack()
     radiobutton2.pack()
@@ -200,7 +190,8 @@ def tkinter_process():
     def action():
         window.destroy()
 
-    button = tkinter.Button(text="Click Process",font=('segoeuisymbol',12), command=action).pack()
+    button = tkinter.Button(text="Click Process", font=(
+        'segoeuisymbol', 12), command=action).pack()
     window.update()
     window.mainloop()
 
@@ -215,10 +206,8 @@ def convert_image():
         f"PathFinding/examples/{img[count]}.png")
     count += 1
     w, h = im.size
-    # print(im.size)
     data = list(im.getdata(0))  # get data R in (R,G,B)
     image_str = [data[index:(index+w)] for index in range(0, len(data), w)]
-    # print(image_str)
     return image_str
 
 
@@ -226,7 +215,6 @@ def create_maze_from_image(image, grid, rows):
     for i in range(rows):
         for j in range(rows):
             if image[i][j] == 0:
-                # print(grid[i][j].row,grid[i][j].col)
                 grid[i][j].make_barrier()
 
 
@@ -236,9 +224,7 @@ def GUI():
     width_screen = int(width*1.6)
     win = pygame.display.set_mode((width_screen, width))
     pygame.display.set_caption("Path Finding")
-    # ROWS = 49
 
-    # TEST
     img = convert_image()
     ROWS = len(img)
 
@@ -259,7 +245,6 @@ def GUI():
             if pygame.mouse.get_pressed()[0]:  # LEFT
                 pos = pygame.mouse.get_pos()
                 row, col = get_clicked_node(pos, ROWS, width)
-                # print(f"({row},{col})")
                 if 0 <= row < ROWS and 0 <= col < ROWS:
                     node = grid[row][col]
                     if not start and node != end:

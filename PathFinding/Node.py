@@ -2,6 +2,7 @@ from pydoc import Doc
 from PathFinding.Color import*
 import pygame
 
+
 class Node:
     def __init__(self, row, col, width, total_rows) -> None:
         self.row = row
@@ -11,7 +12,20 @@ class Node:
         self.x = row*width
         self.y = col*width
         self.color = WHITE
-        self.neghbor = []
+        self.visited = False
+        self.neighbors = []
+        self.reset_node()
+
+    def make_visited(self):
+        self.visited = True
+
+    def reset_node(self):
+        self.f_score = float("inf")
+        self.g_score = float("inf")
+        self.count = 0
+
+    def is_visited(self):
+        return self.visited
 
     def get_pos(self):
         return self.row, self.col
@@ -63,7 +77,6 @@ class Node:
             win, self.color, (self.y, self.x, self.width, self.width))
 
     def update_neighbor(self, grid) -> None:
-        self.neighbors = []
         # DOWN
         if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier():
             self.neighbors.append(grid[self.row + 1][self.col])
@@ -77,7 +90,7 @@ class Node:
             self.neighbors.append(grid[self.row][self.col + 1])
 
         # LEFT
-        if self.col > 0 and not grid[self.row][self.col - 1].is_barrier(): 
+        if self.col > 0 and not grid[self.row][self.col - 1].is_barrier():
             self.neighbors.append(grid[self.row][self.col - 1])
 
         '''if use diagonal line :D'''
@@ -88,7 +101,7 @@ class Node:
         # # DOWN LEFT
         # if self.row < self.total_rows - 1 and self.col > 0 and not grid[self.row + 1][self.col-1].is_barrier():
         #     self.neighbors.append(grid[self.row + 1][self.col-1])
-        
+
         # # UP RIGHT
         # if self.row > 0 and self.col < self.total_rows - 1 and not grid[self.row - 1][self.col+1].is_barrier():
         #     self.neighbors.append(grid[self.row - 1][self.col+1])
@@ -97,5 +110,28 @@ class Node:
         # if self.row > 0 and self.col > 0 and not grid[self.row - 1][self.col-1].is_barrier():
         #     self.neighbors.append(grid[self.row - 1][self.col-1])
 
+    # returns the neighbors which are not visted(for making the maze)
+    def check_neighbors(self, grid):
+        neighbors = []
+        if self.row < self.total_rows-2 and not grid[self.row+2][self.col].is_visited():
+            neighbors.append(grid[self.row+2][self.col])
+
+        if self.row > 1 and not grid[self.row-2][self.col].is_visited():
+            neighbors.append(grid[self.row-2][self.col])
+
+        if self.col < self.total_rows-2 and not grid[self.row][self.col+2].is_visited():
+            neighbors.append(grid[self.row][self.col+2])
+
+        if self.col > 1 and not grid[self.row][self.col-2].is_visited():
+            neighbors.append(grid[self.row][self.col-2])
+
+        return neighbors
+
     def __lt__(self, other) -> bool:
-        return False
+        if self.f_score == other.f_score == float("inf"):
+            if self.g_score == other.g_score:
+                return self.count < other.count
+            return self.g_score < other.g_score
+        if self.f_score == other.f_score:
+            return self.count < other.count
+        return self.f_score < other.f_score
