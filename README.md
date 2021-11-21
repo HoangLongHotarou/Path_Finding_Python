@@ -11,7 +11,7 @@ Reference:
 * Blog
   * http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
   * http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html
-  * https://hurna.io/academy/algorithms/maze_generator/dfs.html
+  * https://en.wikipedia.org/wiki/Maze_generation_algorithm
 * Youtube
   * https://www.youtube.com/watch?v=ySN5Wnu88nE&t=2s
   * https://www.youtube.com/watch?v=JtiK0DOeI4A&t=4547s
