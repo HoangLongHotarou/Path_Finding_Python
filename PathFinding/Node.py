@@ -77,6 +77,7 @@ class Node:
             win, self.color, (self.y, self.x, self.width, self.width))
 
     def update_neighbor(self, grid) -> None:
+        self.neighbors = []
         # DOWN
         if self.row < self.total_rows - 1 and not grid[self.row + 1][self.col].is_barrier():
             self.neighbors.append(grid[self.row + 1][self.col])
