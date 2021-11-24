@@ -5,9 +5,9 @@ class Maze:
             # index:direct (0:up, 1: right, 2: down, 3: left)
             self.Neighbors = [None, None, None, None]
 
-        # overide like in C#: least than
-        def __lt__(self, other):
-            return True
+        # # overide like in C#: least than
+        # def __lt__(self, other):
+        #     return True
 
     # Optimise convert image to data
     def __init__(self, im):

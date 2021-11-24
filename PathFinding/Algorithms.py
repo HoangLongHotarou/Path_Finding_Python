@@ -47,7 +47,7 @@ def AStar(draw, grid, start, end):
     clock = pygame.time.Clock()
 
     count = 0
-    elapsed = 0
+    explored = 0
     open_set = PriorityQueue()
 
     start.g_score = 0
@@ -57,10 +57,10 @@ def AStar(draw, grid, start, end):
     open_set.put(start)
     while not open_set.empty():
         pygame_processing()
-        elapsed += 1
+        explored += 1
         current = open_set.get()
         if current == end:
-            return came_from, elapsed
+            return came_from, explored
         for neighbor in current.neighbors:
             temp_g_score = current.g_score+1
             if temp_g_score < neighbor.g_score:
@@ -77,14 +77,14 @@ def AStar(draw, grid, start, end):
             current.make_closed()
         clock.tick(60)
         draw()
-    return 0, elapsed
+    return 0, explored
 
 
 def Dijkstra(draw, grid, start, end):
     clock = pygame.time.Clock()
     
     count = 0
-    elapsed = 0
+    explored = 0
     open_set = PriorityQueue()
 
     start.g_score = 0
@@ -93,10 +93,10 @@ def Dijkstra(draw, grid, start, end):
     open_set.put(start)
     while not open_set.empty():
         pygame_processing()
-        elapsed += 1
+        explored += 1
         current = open_set.get()
         if current == end:
-            return came_from, elapsed
+            return came_from, explored
         for neighbor in current.neighbors:
             temp_g_score = current.g_score+1
             if temp_g_score < neighbor.g_score:
@@ -111,4 +111,4 @@ def Dijkstra(draw, grid, start, end):
             current.make_closed()
         clock.tick(60)
         draw()
-    return 0, elapsed
+    return 0, explored

@@ -1,9 +1,14 @@
 from queue import PriorityQueue
 from maze.mazes import Maze
+import math
 
+
+def heuristic(vpos,upos):
+    return abs(vpos[0] - upos[0]) + abs(vpos[1] - upos[1])
+    # return int(math.sqrt((vpos[0] - upos[0])**2 + (vpos[1] - upos[1])**2))
 
 def solve(maze: Maze):
-    c = 0
+    count = 0
     width = maze.width
     total = maze.width*maze.height
 
@@ -13,7 +18,7 @@ def solve(maze: Maze):
     startpos = start.Position
     endpos = end.Position
 
-    visited = [False]*total
+    # visited = [False]*total
     prev = [None]*total
 
     inf = float('inf')
@@ -23,13 +28,11 @@ def solve(maze: Maze):
 
     distances[start.Position[0]*width+start.Position[1]] = 0
     open_set = PriorityQueue()
-    open_set.put((0, c, start))
-    open_set_hash = {start}
-    count = 0
+    open_set.put((0, count, start))
+    explored = 0
     while not open_set.empty():
-        count += 1
+        explored += 1
         u = open_set.get()[2]
-        open_set_hash.remove(u)
         upos = u.Position
         uposindex = upos[0]*width+upos[1]
 
@@ -44,20 +47,19 @@ def solve(maze: Maze):
             if v != None:
                 vpos = v.Position
                 vposindex = vpos[0]*width+vpos[1]
-                d = abs(vpos[0] - upos[0]) + abs(vpos[1] - upos[1])
+                d = heuristic(upos,vpos)
                 newdistance = distances[uposindex]+d
 
-                if newdistance < distances[vposindex] and visited[vposindex] == False:
+                # and visited[vposindex] == False
+                if newdistance < distances[vposindex]:
                     distances[vposindex] = newdistance
                     prev[vposindex] = u
-                    remaining = abs(vpos[0] - endpos[0]) + \
-                        abs(vpos[1] - endpos[1])
-                    if v not in open_set_hash:
-                        c += 1
-                        open_set.put((newdistance+remaining, c, v))
-                        open_set_hash.add(v)
+                    remaining = heuristic(upos,vpos)
+                    if v not in open_set.queue:
+                        count += 1
+                        open_set.put((newdistance+remaining, count, v))
 
-        visited[uposindex] == True
+        # visited[uposindex] == True
 
     from collections import deque
     path = deque()
@@ -66,4 +68,4 @@ def solve(maze: Maze):
         path.appendleft(current)
         current = prev[current.Position[0] * width + current.Position[1]]
 
-    return [path, [count, len(path), completed]]
+    return [path, [explored, len(path), completed]]
